@@ -1,0 +1,107 @@
+@page
+@model FinalProject.Pages.Customers.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+
+<form>
+	<select asp-for="CurrentSort" asp-items="Model.SortList">
+		<option value="">sort by...</option>
+	</select>
+	<button type="submit">Sort</button>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @{
+                    // Alternate sort order
+                    var firstSort = "first_asc";
+                    if (Model.CurrentSort == "first_asc")
+                    {
+                        firstSort = "first_desc";
+                    }
+                }
+                <a asp-page="./Index" asp-route-CurrentSort="@firstSort">@Html.DisplayNameFor(model => model.Customer[0].FirstName)</a>
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Customer[0].LastName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Customer[0].Age)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Customer[0].Gender)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Customer[0].State)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Customer) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.FirstName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LastName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Age)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Gender)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.State)
+            </td>
+            <td>
+            @*  course represents a StudentCourse record
+                Each course has a Course navigation property which is the actual Course
+                The Course has a description. So you do course.Course.Description *@
+            @foreach (var firearm in item.Orders!)
+            {
+                @firearm.Firearm.Model <br />
+            }
+            @if (item.Orders.Count == 0)
+            {
+                @:Not Purchased
+            }                  
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.CustomerID">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.CustomerID">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.CustomerID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+
+<hr />
+@{
+    // If we are on page 1, prevDisabled will be set to the "disabled" class
+    // otherwise, it will be empty. So our previous button will be enabled or disabled based on this logic
+    var prevDisabled = "";
+    if (Model.PageNum <= 1)
+    {
+        prevDisabled = "disabled";
+    }
+}
+<nav aria-label="Page navigation example">
+    <ul class="pagination">
+        <!-- FIXME: These buttons will forget your current sort order! -->
+        <li class="page-item @prevDisabled"><a class="page-link" asp-page="./Index" asp-route-PageNum="@(Model.PageNum - 1)">Previous</a></li>
+        <li class="page-item"><a class="page-link" asp-page="./Index" asp-route-PageNum="@(Model.PageNum + 1)">Next</a></li>
+    </ul>
+</nav>
